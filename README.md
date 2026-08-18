@@ -69,6 +69,21 @@ npm run build      # tsc -p tsconfig.json → 产物 lib/
   为运行时宿主依赖，由 DSH 宿主提供。
 - 常见注意：npm 默认缓存目录若不可写，加 `--cache <可写目录>`。
 
+## DSH 启动装配（标准 bundle 声明）
+
+本插件是 DSH **bundle 插件**，启动装配依赖 package.json 中的**标准启动声明**：
+`"dsh": { "bundle": { "patch": "./cordis.patch.yml" } }`，配套的 `cordis.patch.yml` 自引用自身包名，
+让 DSH Desktop 把它识别为 profile 层并执行 `apply()` 注册工具。
+
+DSH 启动时（`dsh-app-boot` 的 `loadBundleLayerSafe`）会检查每个 `dsh.profile.bundles` 里的包是否声明
+`dsh.bundle.patch`。**若缺失该声明，插件会被判定「非 dsh 插件 bundle」而跳过并从 bundles 移除**（并可能触发
+DSH 的 fail-loud 恢复：备份 manifest 后按模板重建）。因此发布或手动装配时**务必保留**：
+
+```
+cordis.patch.yml        # 装配自身：{ insert: [{ id, name: '@dsh-external/spector-webgl' }] }
+package.json            # dsh.bundle.patch 声明 + files 含 cordis.patch.yml
+```
+
 ## 架构
 
 `src/index.ts` 单文件：`resolveBundle`（探测/拷贝 bundle + sha256）、五类 `SNIPPETS`（真实 API 片段）、

@@ -1,0 +1,9 @@
+# dsh bundle patch — 装配 @dsh-external/spector-webgl 为 profile 层。
+# 由 package.json 的 dsh.bundle.patch 声明指向本文件；DSH Desktop 启动时
+# 读 dsh.profile.bundles 逐层应用，本层自引用自身包名，import '@dsh-external/spector-webgl'
+# 后执行 apply()，注册 spector_bundle / spector_snippets / spector_check_project 三工具。
+# config 省略（Config 均有默认值）。
+
+- insert:
+    - id: spector-webgl
+      name: '@dsh-external/spector-webgl'
